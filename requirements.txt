@@ -1,12 +1,12 @@
 torch
 torchvision
-timm
+timm==0.9.16
 streamlit
-opencv-python
-numpy
-pandas
+opencv-python-headless==4.11.0.86
+numpy==2.2.6
+pandas==2.3.3
 matplotlib
-scikit-learn
+scikit-learn==1.7.2
 Pillow
 reportlab
 tqdm
