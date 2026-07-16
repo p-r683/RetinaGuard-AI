@@ -1,5 +1,29 @@
-# 👁️ RetinaGuard AI
+<p align="center">
+  <img src="assets/github_banner.png" width="100%">
+</p>
+                                  👁️ RetinaGuard AI 
+<p align="center">
+  <img src="assets/logo.png" width="170">
+</p>
 
+<h1 align="center">RetinaGuard AI</h1>
+
+<p align="center">
+<b>Explainable AI for Diabetic Retinopathy Screening using the RETFound Foundation Model</b>
+</p>
+<p align="center">
+
+<img src="https://img.shields.io/badge/Python-3.10-blue">
+
+<img src="https://img.shields.io/badge/PyTorch-2.x-red">
+
+<img src="https://img.shields.io/badge/Streamlit-App-FF4B4B">
+
+<img src="https://img.shields.io/badge/License-MIT-green">
+
+<img src="https://img.shields.io/badge/Status-Research-blueviolet">
+
+</p>
 > **Explainable AI for Diabetic Retinopathy Screening using the RETFound
 > Foundation Model**
 
@@ -24,7 +48,11 @@ dashboard**, **clinical-style PDF reports**, **analysis history**, and
 -   Analysis history tracking
 -   Model comparison dashboard
 -   Modular project structure
+## System Architecture
 
+<p align="center">
+<img src="assets/architecture.png" width="95%">
+</p>
 ------------------------------------------------------------------------
 
 ## Model
@@ -56,7 +84,11 @@ Classes:
 -   Moderate DR
 -   Severe DR
 -   Proliferative DR
+## Workflow
 
+<p align="center">
+<img src="assets/workflow.png" width="90%">
+</p>
 ------------------------------------------------------------------------
 
 ## Training Strategy
