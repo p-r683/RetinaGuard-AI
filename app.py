@@ -7,39 +7,32 @@ import pandas as pd
 import streamlit as st
 import torch
 from PIL import Image
-from utils.pdf_report import generate_pdf_report
-from models.attention_explain import explain_image as run_attention_rollout
+
 from config.config import (
-    CHECKPOINT_DIR,
-    CLASS_NAMES,
-    DEVICE,
-    NUM_CLASSES,
-    PRETRAINED_CHECKPOINT,
-    RETF_FOUND_REPO,
+    UPLOAD_DIR,
     create_directories,
     validate_paths,
 )
-from models.gradcam_explain import explain_image as run_gradcam
-from models.retfound_classifier import RETFoundClassifier
-from utils.history_manager import (
-    clear_history,
-    load_history,
-    save_analysis,
+from models.attention_explain import (
+    explain_image as run_attention_rollout,
 )
+from models.gradcam_explain import (
+    explain_image as run_gradcam,
+)
+from models.inference import load_inference_model
+from models.retfound_classifier import RETFoundClassifier
 from utils.comparison_manager import (
     build_per_class_recall_dataframe,
     build_summary_dataframe,
     get_best_experiment,
     load_experiment_metrics,
 )
-# ---------------------------------------------------------
-# Paths
-# ---------------------------------------------------------
-from config.config import (
-    PROJECT_DIR,
-    UPLOAD_DIR,
+from utils.history_manager import (
+    clear_history,
+    load_history,
+    save_analysis,
 )
-MODEL_CHECKPOINT = CHECKPOINT_DIR / "retfound_head_best.pth"
+from utils.pdf_report import generate_pdf_report
 
 
 # ---------------------------------------------------------
@@ -272,49 +265,12 @@ def initialize_project() -> None:
 
 @st.cache_resource(show_spinner=False)
 def load_retfound_model() -> RETFoundClassifier:
-    """
-    Load and cache the best head-only RETFound classifier.
+    """Download, load, and cache the deployment model."""
 
-    The model is loaded once and reused across Streamlit reruns.
-    """
-
-    if not MODEL_CHECKPOINT.exists():
-        raise FileNotFoundError(
-            f"Model checkpoint not found: {MODEL_CHECKPOINT}"
-        )
-
-    model = RETFoundClassifier(
-        repository_path=RETF_FOUND_REPO,
-        checkpoint_path=PRETRAINED_CHECKPOINT,
-        num_classes=NUM_CLASSES,
+    return load_inference_model(
+        device=torch.device("cpu")
     )
-
-    checkpoint = torch.load(
-        MODEL_CHECKPOINT,
-        map_location="cpu",
-        weights_only=False,
-    )
-
-    model.load_state_dict(
-        checkpoint["model_state_dict"]
-    )
-
-    del checkpoint
-
-    # Attention rollout needs no parameter gradients.
-    # ViT Grad-CAM captures gradients from the target activation.
-    for parameter in model.parameters():
-        parameter.requires_grad = False
-
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-
-    app_device = torch.device("cpu")
-
-    model.to(app_device)
-    model.eval()
-
-    return model
+   
 
 
 def save_uploaded_image(uploaded_file) -> Path:
@@ -487,7 +443,7 @@ def render_header() -> None:
         unsafe_allow_html=True,
     )
 
-def render_prediction_timeline():
+def render_prediction_timeline() -> None:
     st.markdown("## 🔬 How RetinaGuard Works")
 
     col1, col2, col3, col4, col5, col6 = st.columns(6)
@@ -622,23 +578,32 @@ def render_upload_section():
 
                 result["analysis_id"] = analysis_id
 
-                st.session_state[
-                    "retinaguard_result"
-                ] = result
+            
 
                 st.session_state["retinaguard_result"] = result
 
-        except torch.OutOfMemoryError:
+                except torch.OutOfMemoryError:
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
 
             st.error(
-                "GPU memory was exhausted while generating the "
-                "explanations. Close other GPU applications and "
-                "run the analysis again."
+                "The available memory was insufficient to run "
+                "RETFound. The ViT-Large model may exceed the "
+                "deployment platform's memory limit."
             )
 
+        except RuntimeError as error:
+            st.error(
+                "The RetinaGuard model could not be downloaded "
+                "or loaded. Check the Hugging Face repository, "
+                "HF_TOKEN, and available system memory."
+            )
+            st.exception(error)
+
         except Exception as error:
+            st.error(
+                "The analysis could not be completed."
+            )
             st.exception(error)
 
     return uploaded_file
@@ -828,17 +793,18 @@ def render_results(result: dict) -> None:
                 key="download_attention_report",
             )
 
-    if gradcam_path.exists():
-        with download_right:
-            st.download_button(
-                label="Download ViT Grad-CAM report",
-                data=gradcam_path.read_bytes(),
-                file_name=gradcam_path.name,
-                mime="image/png",
-                use_container_width=True,
-                key="download_gradcam_report",
-            )
-        st.markdown("### Download complete clinical report")
+     if gradcam_path.exists():
+            with download_right:
+                st.download_button(
+                    label="Download ViT Grad-CAM report",
+                    data=gradcam_path.read_bytes(),
+                    file_name=gradcam_path.name,
+                    mime="image/png",
+                    use_container_width=True,
+                    key="download_gradcam_report",
+              )
+
+    st.markdown("### Download complete clinical report")
 
     image_path = Path(
         result["image_path"]
@@ -975,27 +941,18 @@ def render_history_dashboard() -> None:
         display_history["confidence"]
         .map(lambda value: f"{value:.2%}")
     )
-
+    display_history = display_history.sort_values(
+        by="timestamp",
+        ascending=False,
+    )
+    
     display_history["timestamp"] = (
         display_history["timestamp"]
         .dt.strftime("%d %b %Y, %I:%M %p")
     )
-
-    display_columns = [
-        "analysis_id",
-        "timestamp",
-        "filename",
-        "predicted_class",
-        "confidence",
-    ]
-
+    
     st.dataframe(
-        display_history[
-            display_columns
-        ].sort_values(
-            by="timestamp",
-            ascending=False,
-        ),
+        display_history[display_columns],
         use_container_width=True,
         hide_index=True,
     )
