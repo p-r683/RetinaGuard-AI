@@ -1,12 +1,12 @@
 <p align="center">
   <img src="assets/github_banner.png" width="100%">
 </p>
-                                  👁️ RetinaGuard AI 
+<h1 align="center">👁️RetinaGuard AI</h1>                                   
 <p align="center">
   <img src="assets/logo.png" width="170">
 </p>
 
-<h1 align="center">RetinaGuard AI</h1>
+
 
 <p align="center">
 <b>Explainable AI for Diabetic Retinopathy Screening using the RETFound Foundation Model</b>
