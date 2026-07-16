@@ -950,7 +950,13 @@ def render_history_dashboard() -> None:
         display_history["timestamp"]
         .dt.strftime("%d %b %Y, %I:%M %p")
     )
-    
+    display_columns = [
+    "analysis_id",
+    "timestamp",
+    "filename",
+    "predicted_class",
+    "confidence",
+     ]
     st.dataframe(
         display_history[display_columns],
         use_container_width=True,
