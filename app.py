@@ -528,7 +528,7 @@ def render_upload_section():
         st.image(
             image,
             caption="Uploaded fundus image",
-            use_container_width=True,
+            width="stretch",
         )
 
     with details_column:
@@ -555,7 +555,7 @@ def render_upload_section():
     analyze_clicked = st.button(
         "Run complete RETFound analysis",
         type="primary",
-        use_container_width=True,
+        width="stretch",
     )
 
     if analyze_clicked:
@@ -693,7 +693,7 @@ def render_results(result: dict) -> None:
 
         st.dataframe(
             display_data,
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
 
@@ -727,7 +727,7 @@ def render_results(result: dict) -> None:
         if attention_path.exists():
             st.image(
                 str(attention_path),
-                use_container_width=True,
+                width="stretch",
             )
 
     with gradcam_tab:
@@ -741,7 +741,7 @@ def render_results(result: dict) -> None:
         if gradcam_path.exists():
             st.image(
                 str(gradcam_path),
-                use_container_width=True,
+                width="stretch",
             )
     
     with comparison_tab:
@@ -753,7 +753,7 @@ def render_results(result: dict) -> None:
             if attention_path.exists():
                 st.image(
                     str(attention_path),
-                    use_container_width=True,
+                    width="stretch",
                 )
 
         with right:
@@ -762,7 +762,7 @@ def render_results(result: dict) -> None:
             if gradcam_path.exists():
                 st.image(
                     str(gradcam_path),
-                    use_container_width=True,
+                    width="stretch",
                 )
 
     st.markdown(
@@ -789,7 +789,7 @@ def render_results(result: dict) -> None:
                 data=attention_path.read_bytes(),
                 file_name=attention_path.name,
                 mime="image/png",
-                use_container_width=True,
+                width="stretch",
                 key="download_attention_report",
             )
 
@@ -800,7 +800,7 @@ def render_results(result: dict) -> None:
                 data=gradcam_path.read_bytes(),
                 file_name=gradcam_path.name,
                 mime="image/png",
-                use_container_width=True,
+                width="stretch",
                 key="download_gradcam_report",
             )
 
@@ -833,7 +833,7 @@ def render_results(result: dict) -> None:
                 f"retinaguard_{image_path.stem}_report.pdf"
             ),
             mime="application/pdf",
-            use_container_width=True,
+            width="stretch",
             key="download_retinaguard_pdf",
         )
     else:
@@ -959,7 +959,7 @@ def render_history_dashboard() -> None:
      ]
     st.dataframe(
         display_history[display_columns],
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -970,7 +970,7 @@ def render_history_dashboard() -> None:
         ).encode("utf-8"),
         file_name="retinaguard_analysis_history.csv",
         mime="text/csv",
-        use_container_width=True,
+        width="stretch",
         key="download_analysis_history",
     )
 
@@ -1107,7 +1107,7 @@ def render_model_comparison() -> None:
 
     st.dataframe(
         display_summary,
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -1169,7 +1169,7 @@ def render_model_comparison() -> None:
 
         st.dataframe(
             exact_values,
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
 
@@ -1203,7 +1203,7 @@ def render_model_comparison() -> None:
             caption=(
                 f"{selected_experiment} confusion matrix"
             ),
-            use_container_width=True,
+            width="stretch",
         )
     else:
         st.warning(
@@ -1234,7 +1234,7 @@ def render_model_comparison() -> None:
         data=comparison_csv,
         file_name="retinaguard_model_comparison.csv",
         mime="text/csv",
-        use_container_width=True,
+        width="stretch",
         key="download_model_comparison",
     )            
 def main() -> None:
