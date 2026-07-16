@@ -97,11 +97,10 @@ def create_directories() -> None:
         )
 
 def validate_paths() -> None:
-    """Validate files required by the deployed inference app."""
+    """Validate source files required by the deployed app."""
 
     required = {
         "RETFound runtime source": RETF_FOUND_REPO,
-        "Inference checkpoint": INFERENCE_CHECKPOINT,
     }
 
     missing = [
