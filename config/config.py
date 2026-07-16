@@ -32,8 +32,17 @@ RETF_FOUND_REPO = Path(
 PRETRAINED_CHECKPOINT = Path(
     os.getenv(
         "RETFOUND_PRETRAINED_CHECKPOINT",
-        r"D:\RetinaGuard\RETFound_MAE-main"
-        r"\checkpoints\RETFound_cfp_weights.pth",
+        PROJECT_DIR
+        / "checkpoints"
+        / "RETFound_cfp_weights.pth",
+    )
+).resolve()
+INFERENCE_CHECKPOINT = Path(
+    os.getenv(
+        "RETINAGUARD_INFERENCE_CHECKPOINT",
+        PROJECT_DIR
+        / "checkpoints"
+        / "retfound_inference.pth",
     )
 ).resolve()
 
@@ -87,18 +96,12 @@ def create_directories() -> None:
             exist_ok=True,
         )
 
-
 def validate_paths() -> None:
-    """Validate files required for inference."""
+    """Validate files required by the deployed inference app."""
 
     required = {
-        "RETFound repository": RETF_FOUND_REPO,
-        "RETFound pretrained checkpoint": (
-            PRETRAINED_CHECKPOINT
-        ),
-        "Inference checkpoint": (
-            CHECKPOINT_DIR / "retfound_inference.pth"
-        ),
+        "RETFound runtime source": RETF_FOUND_REPO,
+        "Inference checkpoint": INFERENCE_CHECKPOINT,
     }
 
     missing = [
