@@ -24,7 +24,7 @@ class RETFoundClassifier(nn.Module):
     def __init__(
         self,
         repository_path: Path,
-        checkpoint_path: Path,
+        checkpoint_path: Path | None=None,
         num_classes: int = 5,
         dropout: float = 0.2,
     ) -> None:
@@ -41,10 +41,11 @@ class RETFoundClassifier(nn.Module):
             global_pool=True,
         )
 
-        self._load_pretrained_checkpoint(
-            checkpoint_path=checkpoint_path,
-            interpolate_pos_embed=interpolate_pos_embed,
-        )
+        if checkpoint_path is not None:
+            self._load_pretrained_checkpoint(
+                checkpoint_path=checkpoint_path,
+                interpolate_pos_embed=interpolate_pos_embed,
+            )
 
         feature_dimension = self.model.head.in_features
 
