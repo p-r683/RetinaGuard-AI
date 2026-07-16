@@ -33,7 +33,15 @@ TRAINING_CHECKPOINT = (
     CHECKPOINT_DIR / "retfound_head_best.pth"
 )
 
-
+model = RETFoundClassifier(
+    repository_path=RETF_FOUND_REPO,
+    checkpoint_path=None,
+    num_classes=NUM_CLASSES,
+)
+model.load_state_dict(
+    checkpoint["model_state_dict"],
+    strict=True,
+)
 def get_model_device(
     prefer_gpu: bool = False,
 ) -> torch.device:
