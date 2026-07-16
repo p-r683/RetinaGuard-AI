@@ -374,20 +374,20 @@ def run_complete_analysis(
     image_path: Path,
 ) -> dict:
     """Run both explainability pipelines on the same image."""
-
+    print("Running Attention Rollout...")
     attention_result = run_attention_rollout(
         model=model,
         image_path=image_path,
     )
-
+    print("Attention Rollout finished")
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
-
+    print("Running GradCAM...")
     gradcam_result = run_gradcam(
         model=model,
         image_path=image_path,
     )
-
+    print("GradCAM finished")
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
 
@@ -564,15 +564,27 @@ def render_upload_section():
         )
 
         try:
-            with st.spinner(
+           with st.spinner(
                 "Loading RETFound and generating explanations..."
             ):
+                st.info("Step 1/4 : Loading RETFound model...")
+                print("STEP 1 : Loading RETFound model")
+            
                 model = load_retfound_model()
-
+            
+                st.success("RETFound model loaded.")
+                print("STEP 2 : Model loaded")
+            
+                st.info("Step 2/4 : Running complete analysis...")
+                print("STEP 3 : Starting analysis")
+            
                 result = run_complete_analysis(
                     model=model,
                     image_path=image_path,
                 )
+            
+                st.success("Analysis completed.")
+                print("STEP 4 : Analysis completed")
 
                 analysis_id = save_analysis(result)
 
