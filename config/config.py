@@ -45,7 +45,10 @@ INFERENCE_CHECKPOINT = Path(
         / "retfound_inference.pth",
     )
 ).resolve()
-
+HF_MODEL_REPO = os.getenv(
+    "RETINAGUARD_HF_REPO",
+    "pr-6/RetinaGuard-AI",
+)
 CHECKPOINT_DIR = PROJECT_DIR / "checkpoints"
 OUTPUT_DIR = PROJECT_DIR / "outputs"
 LOG_DIR = PROJECT_DIR / "logs"
