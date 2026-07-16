@@ -26,7 +26,7 @@ DATASET_DIR = Path(
 RETF_FOUND_REPO = Path(
     os.getenv(
         "RETFOUND_REPO_DIR",
-        r"D:\RetinaGuard\RETFound_MAE-main",
+        PROJECT_DIR / "external" / "RETFound_MAE",
     )
 ).resolve()
 PRETRAINED_CHECKPOINT = Path(
