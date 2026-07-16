@@ -793,16 +793,16 @@ def render_results(result: dict) -> None:
                 key="download_attention_report",
             )
 
-     if gradcam_path.exists():
-            with download_right:
-                st.download_button(
-                    label="Download ViT Grad-CAM report",
-                    data=gradcam_path.read_bytes(),
-                    file_name=gradcam_path.name,
-                    mime="image/png",
-                    use_container_width=True,
-                    key="download_gradcam_report",
-              )
+    if gradcam_path.exists():
+        with download_right:
+            st.download_button(
+                label="Download ViT Grad-CAM report",
+                data=gradcam_path.read_bytes(),
+                file_name=gradcam_path.name,
+                mime="image/png",
+                use_container_width=True,
+                key="download_gradcam_report",
+            )
 
     st.markdown("### Download complete clinical report")
 
