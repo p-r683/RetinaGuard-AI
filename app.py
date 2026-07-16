@@ -582,7 +582,7 @@ def render_upload_section():
 
                 st.session_state["retinaguard_result"] = result
 
-                except torch.OutOfMemoryError:
+        except torch.OutOfMemoryError:
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
 
