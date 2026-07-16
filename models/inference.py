@@ -1,12 +1,19 @@
 from __future__ import annotations
-
+import os
 from pathlib import Path
 from typing import Any
 
 import torch
 from PIL import Image
 from torch.nn import functional as F
-
+from huggingface_hub import hf_hub_download
+from config.config import (
+    CLASS_NAMES,
+    HF_MODEL_REPO,
+    INFERENCE_CHECKPOINT,
+    NUM_CLASSES,
+    RETF_FOUND_REPO,
+)
 from config.config import (
     CHECKPOINT_DIR,
     CLASS_NAMES,
@@ -91,11 +98,31 @@ def create_inference_checkpoint(
     )
 
     return destination
+def resolve_inference_checkpoint() -> Path:
+    """
+    Return the local inference checkpoint.
 
+    If it is not present locally, download and cache it from
+    Hugging Face Hub.
+    """
+
+    if INFERENCE_CHECKPOINT.exists():
+        return INFERENCE_CHECKPOINT
+
+    token = os.getenv("HF_TOKEN")
+
+    downloaded_path = hf_hub_download(
+        repo_id=HF_MODEL_REPO,
+        filename="retfound_inference.pth",
+        repo_type="model",
+        token=token,
+    )
+
+    return Path(downloaded_path)
 
 def load_inference_model(
     device: torch.device | None = None,
-    checkpoint_path: Path = INFERENCE_CHECKPOINT,
+    selected_checkpoint = resolve_inference_checkpoint(),
 ) -> RETFoundClassifier:
     """
     Build RETFound and load the best inference weights.
@@ -103,7 +130,11 @@ def load_inference_model(
     Falls back to the training checkpoint when the model-only
     checkpoint has not yet been created.
     """
-
+    checkpoint = torch.load(
+    selected_checkpoint,
+    map_location="cpu",
+    weights_only=False,
+)
     selected_device = (
         device
         if device is not None
